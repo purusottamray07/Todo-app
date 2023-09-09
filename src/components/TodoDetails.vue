@@ -59,8 +59,7 @@ const isOverdue = (due) => {
   padding: 10px;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  margin-bottom: 10px;
-  height: 80px;
+  height: 70px;
   .left-section {
     display: flex;
     align-items: center;

@@ -118,6 +118,11 @@ const isDisabled = computed(() => {
     display: flex;
     justify-content: space-between;
     padding: 10px;
+    background-color: #708090;
+    border-radius: 4px;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
     .close-modal {
       cursor: pointer;
     }

@@ -127,9 +127,10 @@ const duplicateTodo = (id) => {
 </script>
 
 <template>
-  <main>
-    <div class="home-container">
-      <div class="header">
+  <div class="home-container">
+    <div class="header">My Todo List</div>
+    <div class="body">
+      <div class="create-todos-section">
         <div class="create-todo">
           <v-btn color="primary" @click="open('Create')"> Create Todo </v-btn>
         </div>
@@ -141,99 +142,84 @@ const duplicateTodo = (id) => {
           </v-btn>
         </div>
       </div>
-      <div class="body">
-        <template v-if="!viewAllCompleted">
-          <div
-            class="todo-list-container"
-            v-for="todo in todoStore.getAllTodos"
-            :key="todo.id"
-          >
-            <TodoDetails :todo="todo" @updateTodo="updateTodo"></TodoDetails>
-          </div>
-        </template>
+      <template v-if="!viewAllCompleted">
+        <div
+          class="todo-list-container"
+          v-for="todo in todoStore.getAllTodos"
+          :key="todo.id"
+        >
+          <TodoDetails :todo="todo" @updateTodo="updateTodo"></TodoDetails>
+        </div>
+      </template>
 
-        <template v-if="viewAllCompleted">
-          <div
-            class="todo-list-container"
-            v-for="todo in todoStore.getAllCompletedTodos"
-            :key="todo.id"
-          >
-            <TodoDetails :todo="todo" @updateTodo="updateTodo"></TodoDetails>
-          </div>
-        </template>
-      </div>
+      <template v-if="viewAllCompleted">
+        <div
+          class="todo-list-container"
+          v-for="todo in todoStore.getAllCompletedTodos"
+          :key="todo.id"
+        >
+          <TodoDetails :todo="todo" @updateTodo="updateTodo"></TodoDetails>
+        </div>
+      </template>
     </div>
+  </div>
 
-    <TodoModal
-      :updateValues="updateData"
-      :type="modalType"
-      :visible="openModal"
-      @save="onSave"
-      @close="onClose"
-      v-if="openModal"
-    ></TodoModal>
+  <TodoModal
+    :updateValues="updateData"
+    :type="modalType"
+    :visible="openModal"
+    @save="onSave"
+    @close="onClose"
+    v-if="openModal"
+  ></TodoModal>
 
-    <ConfirmModal
-      type="Delete"
-      :visible="openConfirmModal"
-      @save="onConfirm"
-      @close="closeConfirmModal"
-      v-if="openConfirmModal"
-    ></ConfirmModal>
-  </main>
+  <ConfirmModal
+    type="Delete"
+    :visible="openConfirmModal"
+    @save="onConfirm"
+    @close="closeConfirmModal"
+    v-if="openConfirmModal"
+  ></ConfirmModal>
 </template>
 
 <style lang="scss">
 .home-container {
   display: flex;
   flex-direction: column;
-  width: 800px;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
   .header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    height: 200px;
-    .create-todo {
-      width: 300px;
-    }
-    .view-all-todos {
-    }
+    height: 100px;
+    background-color: #708090;
+    border-radius: 4px;
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
   }
   .body {
     display: flex;
-    width: 800px;
     flex-direction: column;
+    margin: 0 auto;
+    width: 70%;
+    padding: 10px 0px;
+    .create-todos-section {
+      display: flex;
+      justify-content: space-between;
+
+      .create-todo {
+        width: 300px;
+      }
+      .view-all-todos {
+      }
+    }
     .todo-list-container {
       display: flex;
       flex-direction: column;
-      width: 100%;
-      .todo-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px;
-        border-radius: 10px;
-        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-        margin-bottom: 10px;
-        height: 80px;
-        &.overdue {
-          background: #f58787;
-          color: white;
-          border: 2px solid red;
-        }
-        .left-section {
-          display: flex;
-          align-items: center;
-        }
-        .right-section {
-          .todo-actions {
-            .action-btn {
-              margin-left: 5px;
-            }
-          }
-        }
-      }
+      width: 60%;
+      margin: 10px 0px;
     }
   }
 }
