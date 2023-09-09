@@ -127,10 +127,14 @@ const duplicateTodo = (id) => {
 </script>
 
 <template>
-  <div class="home-container">
-    <div class="header">My Todo List</div>
-    <div class="body">
-      <div class="create-todos-section">
+  <div class="home-container flex flex-col w-full h-full">
+    <div
+      class="header flex justify-center align-center h-full rounded text-3xl font-bold text-white"
+    >
+      My Todo List
+    </div>
+    <div class="body flex flex-col ml-auto mr-auto mt-0 mb-0 w-3/4">
+      <div class="create-todos-section flex justify-between">
         <div class="create-todo">
           <v-btn color="primary" @click="open('Create')"> Create Todo </v-btn>
         </div>
@@ -144,7 +148,7 @@ const duplicateTodo = (id) => {
       </div>
       <template v-if="!viewAllCompleted">
         <div
-          class="todo-list-container"
+          class="todo-list-container flex flex-col"
           v-for="todo in todoStore.getAllTodos"
           :key="todo.id"
         >
@@ -184,40 +188,18 @@ const duplicateTodo = (id) => {
 
 <style lang="scss">
 .home-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
   .header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100px;
     background-color: #708090;
-    border-radius: 4px;
-    font-size: 32px;
-    font-weight: bold;
-    color: white;
+    height: 100px;
   }
   .body {
-    display: flex;
-    flex-direction: column;
-    margin: 0 auto;
-    width: 70%;
     padding: 10px 0px;
     .create-todos-section {
-      display: flex;
-      justify-content: space-between;
-
       .create-todo {
         width: 300px;
       }
-      .view-all-todos {
-      }
     }
     .todo-list-container {
-      display: flex;
-      flex-direction: column;
       width: 60%;
       margin: 10px 0px;
     }

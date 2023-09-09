@@ -56,7 +56,7 @@ const resetValues = () => {
 };
 
 const isDisabled = computed(() => {
-  return (name.value === "" || due.value === "");
+  return name.value === "" || due.value === "";
 });
 </script>
 
@@ -64,14 +64,16 @@ const isDisabled = computed(() => {
   <div class="d-flex justify-center">
     <!-- <v-btn color="primary" @click="dialog = true"> {{ type }} Todo </v-btn> -->
     <v-dialog v-model="dialog" width="auto">
-      <div class="modal-container">
-        <div class="header">
+      <div class="modal-container flex flex-col p-2.5 rounded">
+        <div
+          class="header flex justify-between align-center rounded text-3xl font-bold text-white p-2.5"
+        >
           <div class="title">{{ type }} Todo</div>
-          <div class="close-modal" @click="onClose">
+          <div class="close-modal cursor-pointer" @click="onClose">
             <v-icon icon="mdi-close-circle"></v-icon>
           </div>
         </div>
-        <div class="body">
+        <div class="body flex flex-col">
           <v-text-field
             label="Name"
             class="todo-name"
@@ -84,7 +86,7 @@ const isDisabled = computed(() => {
             @update:model-value="handleDate"
           ></VueDatePicker>
         </div>
-        <div class="footer">
+        <div class="footer flex justify-end">
           <v-btn
             class="action-btn"
             v-if="type === 'Create'"
@@ -108,28 +110,12 @@ const isDisabled = computed(() => {
 
 <style scoped lang="scss">
 .modal-container {
-  display: flex;
-  flex-direction: column;
   width: 800px;
   background-color: white;
-  padding: 10px;
-  border-radius: 6px;
   .header {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
     background-color: #708090;
-    border-radius: 4px;
-    font-size: 20px;
-    font-weight: bold;
-    color: white;
-    .close-modal {
-      cursor: pointer;
-    }
   }
   .body {
-    display: flex;
-    flex-direction: column;
     padding: 20px 0 80px;
     .todo-name {
       height: 80px;

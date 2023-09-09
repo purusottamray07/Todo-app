@@ -22,8 +22,11 @@ const isOverdue = (due) => {
 </script>
 
 <template>
-  <div class="todo-item" :class="{ overdue: isOverdue(todo.due) }">
-    <div class="left-section">
+  <div
+    class="todo-item flex align-center justify-between p-2.5 rounded-lg"
+    :class="{ overdue: isOverdue(todo.due) }"
+  >
+    <div class="left-section flex align-center">
       <div class="select-item">
         <v-checkbox v-model="todo.checked"></v-checkbox>
       </div>
@@ -53,17 +56,8 @@ const isOverdue = (due) => {
 
 <style lang="scss">
 .todo-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px;
-  border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   height: 70px;
-  .left-section {
-    display: flex;
-    align-items: center;
-  }
   .right-section {
     .todo-actions {
       .action-btn {

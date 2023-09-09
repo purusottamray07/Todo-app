@@ -22,15 +22,19 @@ const onClose = () => {
 <template>
   <div class="d-flex justify-center">
     <v-dialog v-model="dialog" width="auto">
-      <div class="modal-container">
-        <div class="header">
+      <div class="modal-container flex flex-col p-2.5 rounded">
+        <div
+          class="header flex justify-between p-2.5 rounded text-3xl font-bold text-white"
+        >
           <div class="title">{{ type }} Todo</div>
-          <div class="close-modal" @click="onClose">
+          <div class="close-modal cursor-pointer" @click="onClose">
             <v-icon icon="mdi-close-circle"></v-icon>
           </div>
         </div>
-        <div class="body">Are you sure you want to do this ?</div>
-        <div class="footer">
+        <div class="body flex flex-col align-center">
+          Are you sure you want to do this ?
+        </div>
+        <div class="footer flex justify-end">
           <v-btn class="action-btn" @click="onSave">Delete </v-btn>
         </div>
       </div>
@@ -40,30 +44,13 @@ const onClose = () => {
 
 <style scoped lang="scss">
 .modal-container {
-  display: flex;
-  flex-direction: column;
   width: 800px;
   background-color: white;
-  padding: 10px;
-  border-radius: 6px;
   .header {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
     background-color: #708090;
-    border-radius: 4px;
-    font-size: 20px;
-    font-weight: bold;
-    color: white;
-    .close-modal {
-      cursor: pointer;
-    }
   }
   .body {
-    display: flex;
-    flex-direction: column;
     padding: 20px 0 80px;
-    align-items: center;
   }
   .footer {
     display: flex;
