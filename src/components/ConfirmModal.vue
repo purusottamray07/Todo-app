@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import "@vuepic/vue-datepicker/dist/main.css";
+import { useDisplay } from "vuetify";
 
 const props = defineProps({
   type: String,
@@ -8,6 +9,7 @@ const props = defineProps({
 });
 const emit = defineEmits(["save", "close"]);
 const dialog = ref(props.visible);
+const { mobile } = useDisplay();
 
 const onSave = () => {
   emit("save");
@@ -21,8 +23,8 @@ const onClose = () => {
 
 <template>
   <div class="d-flex justify-center">
-    <v-dialog v-model="dialog" width="auto">
-      <div class="modal-container flex flex-col p-2.5 rounded">
+    <v-dialog v-model="dialog" :fullscreen="mobile">
+      <div class="modal-container h-full w-full flex flex-col p-2.5 rounded">
         <div
           class="header flex justify-between p-2.5 rounded text-3xl font-bold text-white"
         >
@@ -44,8 +46,12 @@ const onClose = () => {
 
 <style scoped lang="scss">
 .modal-container {
-  width: 800px;
   background-color: white;
+  @media (min-width: 440px) {
+    width: 800px;
+    height: auto;
+    margin: 0 auto;
+  }
   .header {
     background-color: #708090;
   }

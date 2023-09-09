@@ -8,6 +8,7 @@ import { useTodoStore } from "../stores/todoStore";
 import TodoDetails from "../components/TodoDetails.vue";
 import { storeToRefs } from "pinia";
 import TodoService from "../services/TodoServices";
+import { useDisplay } from "vuetify";
 
 const todoList = ref([]);
 const todoListDisplay = ref([]);
@@ -19,6 +20,9 @@ const isUpdate = ref(false);
 const viewAllCompleted = ref(false);
 const selectedTodoID = ref("");
 const todoService = new TodoService();
+const { mobile } = useDisplay();
+
+console.log(mobile.value);
 
 onMounted(() => {});
 
@@ -129,13 +133,13 @@ const duplicateTodo = (id) => {
 <template>
   <div class="home-container flex flex-col w-full h-full">
     <div
-      class="header flex justify-center align-center h-full rounded text-3xl font-bold text-white"
+      class="header flex justify-center align-center h-full text-3xl font-bold text-white"
     >
       My Todo List
     </div>
-    <div class="body flex flex-col ml-auto mr-auto mt-0 mb-0 w-3/4">
+    <div class="body flex flex-col w-3/4p">
       <div class="create-todos-section flex justify-between">
-        <div class="create-todo">
+        <div class="create-todo" v-if="!mobile">
           <v-btn color="primary" @click="open('Create')"> Create Todo </v-btn>
         </div>
         <div class="view-all-todos">
@@ -165,6 +169,20 @@ const duplicateTodo = (id) => {
           <TodoDetails :todo="todo" @updateTodo="updateTodo"></TodoDetails>
         </div>
       </template>
+
+      <div
+        class="mobile-create-todo absolute bottom-8 right-8"
+        v-if="mobile"
+        @click="open('Create')"
+      >
+        <v-col cols="auto">
+          <v-btn
+            icon="mdi-plus"
+            size="large"
+            class="create-todo-mbile-btn"
+          ></v-btn>
+        </v-col>
+      </div>
     </div>
   </div>
 
@@ -194,14 +212,34 @@ const duplicateTodo = (id) => {
   }
   .body {
     padding: 10px 0px;
+    margin: 0 auto;
+    width: 1000px;
+
+    @media (max-width: 440px) {
+      width: 100%;
+      padding: 10px;
+    }
     .create-todos-section {
+      @media (max-width: 440px) {
+        justify-content: center;
+      }
       .create-todo {
         width: 300px;
       }
     }
     .todo-list-container {
-      width: 60%;
-      margin: 10px 0px;
+      width: 80%;
+      margin: 10px auto;
+      @media (max-width: 440px) {
+        width: 100%;
+        margin: 10px 0;
+      }
+    }
+    .mobile-create-todo {
+      .create-todo-mbile-btn {
+        background-color: rgb(98, 0, 238);
+        color: white;
+      }
     }
   }
 }

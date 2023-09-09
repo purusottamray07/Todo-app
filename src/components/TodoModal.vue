@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, computed } from "vue";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
+import { useDisplay } from "vuetify";
 
 const props = defineProps({
   type: String,
@@ -9,6 +10,8 @@ const props = defineProps({
   updateValues: Object,
 });
 const emit = defineEmits(["save", "close"]);
+const { mobile } = useDisplay();
+
 
 const name = ref("");
 const due = ref("");
@@ -62,9 +65,8 @@ const isDisabled = computed(() => {
 
 <template>
   <div class="d-flex justify-center">
-    <!-- <v-btn color="primary" @click="dialog = true"> {{ type }} Todo </v-btn> -->
-    <v-dialog v-model="dialog" width="auto">
-      <div class="modal-container flex flex-col p-2.5 rounded">
+    <v-dialog v-model="dialog" :fullscreen="mobile">
+      <div class="modal-container h-full w-full flex flex-col p-2.5 rounded">
         <div
           class="header flex justify-between align-center rounded text-3xl font-bold text-white p-2.5"
         >
@@ -110,7 +112,11 @@ const isDisabled = computed(() => {
 
 <style scoped lang="scss">
 .modal-container {
-  width: 800px;
+  @media (min-width: 440px) {
+    width: 800px;
+    height: auto;
+    margin: 0 auto;
+  }
   background-color: white;
   .header {
     background-color: #708090;
