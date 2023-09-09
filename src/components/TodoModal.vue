@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 
@@ -8,42 +8,56 @@ const props = defineProps({
   visible: Boolean,
   updateValues: Object,
 });
-const emit = defineEmits(["save"]);
+const emit = defineEmits(["save", "close"]);
 
-const name = ref();
-const date = ref();
+const name = ref("");
+const due = ref("");
+const id = ref();
+
 const dialog = ref(props.visible);
 const updateData = ref(props.updateValues);
 
 onMounted(() => {
   if (updateData.value) {
+    id.value = updateData.value.id;
     name.value = updateData.value.name;
-    date.value = updateData.value.due;
+    due.value = updateData.value.due;
   }
 });
 
-watch(
-  () => props.updateValues,
-  (first, second) => {
-    name.value = first.name;
-    date.value = first.due;
-  }
-);
+watch(props.updateValues, async (first) => {
+  id.value = first.id;
+  name.value = first.name;
+  due.value = first.due;
+});
 
 const handleDate = (modelData) => {
-  date.value = modelData;
+  due.value = modelData;
 };
 
 const onSave = () => {
-  emit("save", { name: name._value, date: date._value.toLocaleString() });
+  emit("save", {
+    id: id._value,
+    name: name._value,
+    due: due._value.toLocaleString(),
+  });
   resetValues();
   dialog.value = false;
 };
 
-const resetValues = () => {
-  name.value = "";
-  date.value = "";
+const onClose = () => {
+  emit("close");
 };
+
+const resetValues = () => {
+  id.value = "";
+  name.value = "";
+  due.value = "";
+};
+
+const isDisabled = computed(() => {
+  return (name.value === "" || due.value === "");
+});
 </script>
 
 <template>
@@ -51,7 +65,12 @@ const resetValues = () => {
     <!-- <v-btn color="primary" @click="dialog = true"> {{ type }} Todo </v-btn> -->
     <v-dialog v-model="dialog" width="auto">
       <div class="modal-container">
-        <div class="header">{{ type }} Todo</div>
+        <div class="header">
+          <div class="title">{{ type }} Todo</div>
+          <div class="close-modal" @click="onClose">
+            <v-icon icon="mdi-close-circle"></v-icon>
+          </div>
+        </div>
         <div class="body">
           <v-text-field
             label="Name"
@@ -61,15 +80,26 @@ const resetValues = () => {
             v-model="name"
           ></v-text-field>
           <VueDatePicker
-            v-model="date"
+            v-model="due"
             @update:model-value="handleDate"
           ></VueDatePicker>
         </div>
         <div class="footer">
-          <v-btn class="action-btn" v-if="type === 'Create'" @click="onSave"
+          <v-btn
+            class="action-btn"
+            v-if="type === 'Create'"
+            @click="onSave"
+            :disabled="isDisabled"
             >Create
           </v-btn>
-          <v-btn class="action-btn" v-else @click="onSave"> Update </v-btn>
+          <v-btn
+            class="action-btn"
+            v-else
+            @click="onSave"
+            :disabled="isDisabled"
+          >
+            Update
+          </v-btn>
         </div>
       </div>
     </v-dialog>
@@ -77,37 +107,6 @@ const resetValues = () => {
 </template>
 
 <style scoped lang="scss">
-.custom-modal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  .modal-container {
-    display: flex;
-    flex-direction: column;
-    width: 800px;
-    background-color: white;
-    padding: 10px;
-    border-radius: 6px;
-    .header {
-      display: flex;
-      justify-content: center;
-      padding: 10px;
-    }
-    .body {
-      display: flex;
-      flex-direction: column;
-      padding: 20px 0 80px;
-      .todo-name {
-        height: 80px;
-      }
-    }
-    .footer {
-      display: flex;
-      justify-content: flex-end;
-    }
-  }
-}
-
 .modal-container {
   display: flex;
   flex-direction: column;
@@ -117,8 +116,11 @@ const resetValues = () => {
   border-radius: 6px;
   .header {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     padding: 10px;
+    .close-modal {
+      cursor: pointer;
+    }
   }
   .body {
     display: flex;
