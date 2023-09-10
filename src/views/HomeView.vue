@@ -48,6 +48,9 @@ watch(viewAllCompleted, async (viewAllCompleted) => {
 });
 
 const open = (type) => {
+  if (type === "Create") {
+    updateData.value = null;
+  }
   modalType.value = type;
   openModal.value = true;
 };
@@ -142,11 +145,9 @@ const duplicateTodo = (id) => {
         <div class="create-todo" v-if="!mobile">
           <v-btn color="primary" @click="open('Create')"> Create Todo </v-btn>
         </div>
-        <div class="view-all-todos">
+        <div class="view-all-todos flex w-full justify-end">
           <v-btn @click="viewAllCompleted = !viewAllCompleted">
-            {{
-              viewAllCompleted ? "View all todo's" : "View all completed todo's"
-            }}
+            {{ viewAllCompleted ? "View all" : "View completed" }}
           </v-btn>
         </div>
       </div>
