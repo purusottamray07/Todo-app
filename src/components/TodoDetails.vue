@@ -30,7 +30,7 @@ const isOverdue = (due) => {
     :class="{ overdue: isOverdue(todo.due) }"
   >
     <div class="left-section flex align-center">
-      <div class="select-item" v-if="!mobile">
+      <div class="select-item mr-2.5" v-if="!mobile">
         <v-checkbox density="compact" v-model="todo.checked"></v-checkbox>
       </div>
       <div class="details">
@@ -46,7 +46,7 @@ const isOverdue = (due) => {
         <v-btn class="action-btn" @click="updateTodo('duplicate', todo.id)">
           Duplicate
         </v-btn>
-        <v-btn class="action-btn" @click="updateTodo('done', todo.id)">
+        <v-btn class="action-btn" @click="updateTodo('done', todo.id)" v-if="todo.status !== 'Completed'">
           Done
         </v-btn>
         <v-btn class="action-btn" @click="updateTodo('delete', todo.id)">
@@ -59,7 +59,7 @@ const isOverdue = (due) => {
       <!-- <v-btn icon="mdi-plus"> -->
       <v-menu>
         <template v-slot:activator="{ props }">
-          <v-btn v-bind="props" icon="mdi-dots-vertical"></v-btn>
+          <v-btn v-bind="props" icon="mdi-dots-vertical" size="x-small"></v-btn>
         </template>
         <v-list>
           <v-list-item>
@@ -69,7 +69,7 @@ const isOverdue = (due) => {
             <v-list-item-title @click="updateTodo('duplicate', todo.id)">
               Duplicate
             </v-list-item-title>
-            <v-list-item-title @click="updateTodo('done', todo.id)">
+            <v-list-item-title @click="updateTodo('done', todo.id)" v-if="todo.status !== 'Completed'">
               Done
             </v-list-item-title>
             <v-list-item-title @click="updateTodo('delete', todo.id)">
@@ -89,6 +89,10 @@ const isOverdue = (due) => {
 .todo-item {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   height: 70px;
+  &.overdue {
+    border: 2px solid #e61e10;
+    color: #e61e10;
+  }
   .left-section {
     .select-item {
       .v-input {

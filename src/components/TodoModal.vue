@@ -3,6 +3,8 @@ import { ref, onMounted, watch, computed } from "vue";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import { useDisplay } from "vuetify";
+import { useVuelidate } from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
 
 const props = defineProps({
   type: String,
@@ -12,13 +14,18 @@ const props = defineProps({
 const emit = defineEmits(["save", "close"]);
 const { mobile } = useDisplay();
 
-
 const name = ref("");
 const due = ref("");
 const id = ref();
 
 const dialog = ref(props.visible);
 const updateData = ref(props.updateValues);
+
+const rules = computed(() => ({
+  name: { required, $autoDirty: true },
+  due: { required, $autoDirty: true },
+}));
+const v$ = useVuelidate(rules, { name, due });
 
 onMounted(() => {
   if (updateData.value) {
@@ -59,7 +66,7 @@ const resetValues = () => {
 };
 
 const isDisabled = computed(() => {
-  return name.value === "" || due.value === "";
+  return v$.value.$error;
 });
 </script>
 
@@ -81,19 +88,23 @@ const isDisabled = computed(() => {
             class="todo-name"
             clearable
             variant="outlined"
-            v-model="name"
+            hide-details="true"
+            v-model="v$.name.$model"
           ></v-text-field>
+          <span v-if="v$.name.$error">Required value</span>
           <VueDatePicker
-            v-model="due"
+            class="date-picker"
+            v-model="v$.due.$model"
             @update:model-value="handleDate"
           ></VueDatePicker>
+          <span v-if="v$.due.$error">Required value</span>
         </div>
         <div class="footer flex justify-end">
           <v-btn
             class="action-btn"
             v-if="type === 'Create'"
             @click="onSave"
-            :disabled="isDisabled"
+            :disabled="v$.$invalid"
             >Create
           </v-btn>
           <v-btn
@@ -124,7 +135,7 @@ const isDisabled = computed(() => {
   .body {
     padding: 20px 0 80px;
     .todo-name {
-      height: 80px;
+      margin-bottom: 10px;
     }
   }
   .footer {

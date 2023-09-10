@@ -22,8 +22,6 @@ const selectedTodoID = ref("");
 const todoService = new TodoService();
 const { mobile } = useDisplay();
 
-console.log(mobile.value);
-
 onMounted(() => {});
 
 const todoStore = useTodoStore();
@@ -59,32 +57,6 @@ const onClose = () => {
   openModal.value = false;
 };
 
-const onSave = (data) => {
-  onClose();
-  if (isUpdate.value) {
-    // update op
-
-    todoStore.updateTodo(data);
-    updateData.value = null;
-  } else {
-    // add op
-
-    const item = {
-      id: uuidv4(),
-      name: data.name,
-      status: todoService.isOverdue(data.due) ? "Overdue" : "Pending",
-      due: data.due,
-      checked: false,
-    };
-    const isPastDueDate = moment().diff(item.due);
-
-    if (isPastDueDate > 0) {
-      item.status = "Overdue";
-    }
-    todoStore.addTodo(item);
-  }
-};
-
 const updateTodo = (type, id) => {
   const item = getTodo.value(id);
   switch (type) {
@@ -113,14 +85,38 @@ const deleteTodo = (id) => {
   openConfirmModal.value = true;
 };
 
+const closeConfirmModal = () => {
+  openConfirmModal.value = false;
+};
+
+const onSave = (data) => {
+  onClose();
+  if (isUpdate.value) {
+    // update op
+    todoStore.updateTodo(data);
+    updateData.value = null;
+  } else {
+    // add op
+    const item = {
+      id: uuidv4(),
+      name: data.name,
+      status: todoService.isOverdue(data.due) ? "Overdue" : "Pending",
+      due: data.due,
+      checked: false,
+    };
+    const isPastDueDate = moment().diff(item.due);
+
+    if (isPastDueDate > 0) {
+      item.status = "Overdue";
+    }
+    todoStore.addTodo(item);
+  }
+};
+
 const onConfirm = () => {
   closeConfirmModal();
   todoStore.deleteTodo(selectedTodoID.value);
   selectedTodoID.value = "";
-};
-
-const closeConfirmModal = () => {
-  openConfirmModal.value = false;
 };
 
 const completedTodo = (id) => {
@@ -138,9 +134,14 @@ const duplicateTodo = (id) => {
     <div
       class="header flex justify-center align-center h-full text-3xl font-bold text-white"
     >
-      My Todo List
+      My Todo App
     </div>
     <div class="body flex flex-col w-3/4p">
+      <div
+        class="page-header flex justify-center align-center h-full text-base font-bold"
+      >
+        {{ viewAllCompleted ? "All completed todo's" : "All todo's" }}
+      </div>
       <div class="create-todos-section flex justify-between">
         <div class="create-todo" v-if="!mobile">
           <v-btn color="primary" @click="open('Create')"> Create Todo </v-btn>
@@ -152,23 +153,39 @@ const duplicateTodo = (id) => {
         </div>
       </div>
       <template v-if="!viewAllCompleted">
-        <div
-          class="todo-list-container flex flex-col"
-          v-for="todo in todoStore.getAllTodos"
-          :key="todo.id"
-        >
-          <TodoDetails :todo="todo" @updateTodo="updateTodo"></TodoDetails>
-        </div>
+        <template v-if="todoStore.getAllTodos.length">
+          <div
+            class="todo-list-container flex flex-col"
+            v-for="todo in todoStore.getAllTodos"
+            :key="todo.id"
+          >
+            <TodoDetails :todo="todo" @updateTodo="updateTodo"></TodoDetails>
+          </div>
+        </template>
+        <template v-else>
+          <div class="empty-section flex justify-center">
+            It's time to create a task !!
+          </div>
+        </template>
       </template>
 
       <template v-if="viewAllCompleted">
-        <div
-          class="todo-list-container"
-          v-for="todo in todoStore.getAllCompletedTodos"
-          :key="todo.id"
-        >
-          <TodoDetails :todo="todo" @updateTodo="updateTodo"></TodoDetails>
-        </div>
+        <template v-if="todoStore.getAllCompletedTodos.length">
+          <div
+            class="todo-list-container"
+            v-for="todo in todoStore.getAllCompletedTodos"
+            :key="todo.id"
+          >
+            <TodoDetails
+              :todo="todo"
+              @updateTodo="updateTodo"
+            ></TodoDetails></div
+        ></template>
+        <template v-else>
+          <div class="empty-section flex justify-center">
+            No task is completed yet !!
+          </div>
+        </template>
       </template>
 
       <div
@@ -220,6 +237,9 @@ const duplicateTodo = (id) => {
       width: 100%;
       padding: 10px;
     }
+    .page-header {
+      padding: 10px 0 20px 0;
+    }
     .create-todos-section {
       @media (max-width: 440px) {
         justify-content: center;
@@ -241,6 +261,9 @@ const duplicateTodo = (id) => {
         background-color: rgb(98, 0, 238);
         color: white;
       }
+    }
+    .empty-section {
+      padding-top: 80px;
     }
   }
 }

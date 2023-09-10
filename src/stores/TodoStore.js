@@ -35,6 +35,17 @@ export const useTodoStore = defineStore("todoStore", {
       this.todos = [...filteredTodos, newTodo];
     },
     duplicateTodo(data) {
+      this.todos = this.todos.map((todo) => {
+        if (todo.id === data.id) {
+          return {
+            ...todo,
+            checked: false,
+          };
+        } else {
+          return todo;
+        }
+      });
+
       const newTodo = {
         id: uuidv4(),
         name: data.name,
@@ -53,6 +64,7 @@ export const useTodoStore = defineStore("todoStore", {
           return {
             ...todo,
             status: "Completed",
+            checked: false,
           };
         } else {
           return todo;
