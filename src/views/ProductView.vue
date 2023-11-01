@@ -174,6 +174,9 @@ const onArrowClick = (type) => {
     background-color: white;
     height: 100px;
     padding: 0px 200px;
+    @media (max-width: 440px) {
+      padding: 0px 20px;
+    }
 
     .app-logo {
       height: 80%;
@@ -189,10 +192,19 @@ const onArrowClick = (type) => {
       display: flex;
       height: 50vh;
       width: 100%;
+      @media (max-width: 440px) {
+        flex-direction: column;
+        height: calc(100% - 100px);
+        overflow-y: auto;
+      }
       .image-carousel-container {
         width: 40%;
         height: 100%;
         padding: 0px 30px;
+        @media (max-width: 440px) {
+          width: 100%;
+          padding: 0px 0px 40px 0px;
+        }
 
         .carousel-section {
           display: flex;
@@ -201,6 +213,9 @@ const onArrowClick = (type) => {
           height: 100%;
           padding: 10px 0px;
           background-color: white;
+          @media (max-width: 440px) {
+            height: 400px;
+          }
 
           .thumbnails-section {
             display: flex;
@@ -258,6 +273,7 @@ const onArrowClick = (type) => {
           justify-content: center;
           align-items: center;
           height: 20px;
+          margin-top: 10px;
 
           .images-dot {
             display: flex;
@@ -278,6 +294,10 @@ const onArrowClick = (type) => {
         width: 60%;
         height: 100%;
         padding: 0px 30px;
+        @media (max-width: 440px) {
+          width: 100%;
+          padding: 0px;
+        }
 
         .section-1 {
           padding-top: 0px;
@@ -313,6 +333,9 @@ const onArrowClick = (type) => {
             display: flex;
             align-items: center;
             margin: 10px 0px;
+            @media (max-width: 440px) {
+              justify-content: center;
+            }
 
             span.decrease,
             span.increase {
@@ -355,34 +378,6 @@ const onArrowClick = (type) => {
     @media (max-width: 440px) {
       width: 100%;
       padding: 10px;
-    }
-    .page-header {
-      padding: 10px 0 20px 0;
-    }
-    .create-todos-section {
-      @media (max-width: 440px) {
-        justify-content: center;
-      }
-      .create-todo {
-        width: 300px;
-      }
-    }
-    .todo-list-container {
-      width: 80%;
-      margin: 10px auto;
-      @media (max-width: 440px) {
-        width: 100%;
-        margin: 10px 0;
-      }
-    }
-    .mobile-create-todo {
-      .create-todo-mbile-btn {
-        background-color: rgb(98, 0, 238);
-        color: white;
-      }
-    }
-    .empty-section {
-      padding-top: 80px;
     }
   }
 }
