@@ -222,7 +222,7 @@ const onClose = () => {
               <span class="increase flex items-center">+</span>
             </div>
             <div class="add-to-basket flex justify-center">
-              <Button class="w-full">Add to Basket</Button>
+              <Button class="add-button w-full">Add to Basket</Button>
             </div>
           </div>
         </div>

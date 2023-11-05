@@ -153,7 +153,7 @@ const getIsActive = (id) => {
           </div>
           <div class="back-btn" @click="onClose" v-else>Back</div>
         </div>
-        <div class="popup-content flex items-center justify-center h-full">
+        <div class="popup-content flex justify-center h-full">
           <CustomTabs :tabNames="tabHeader">
             <template v-slot:Images>
               <div class="images-container flex h-full">
