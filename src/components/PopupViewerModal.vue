@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, computed } from "vue";
+import { ref } from "vue";
 import { useDisplay } from "vuetify";
 import CustomTabs from "../components/CustomTabs.vue";
 import { v4 as uuidv4 } from "uuid";
@@ -11,12 +11,13 @@ const props = defineProps({
   selectedImage: String,
 });
 const emit = defineEmits(["close"]);
+const { mobile } = useDisplay();
+
 const dialog = ref(props.visible);
 const currentImage = ref(props.selectedImage);
-const { mobile } = useDisplay();
 const isZoomedInVisible = ref(false);
-
 const touchStartPosX = ref();
+const doubleTapped = ref(false);
 
 const onTouchStart = (event) => {
   touchStartPosX.value = event.changedTouches[0].pageX;
@@ -25,7 +26,7 @@ const onTouchStart = (event) => {
 const onTouchEnd = (event) => {
   const currentEndPosX = event.changedTouches[0].pageX;
   const diff = currentEndPosX - touchStartPosX.value;
-  
+
   if (diff > 0) {
     handleSwipe("right");
   } else if (diff < 0) {
@@ -96,15 +97,21 @@ const onZoomedImageClick = () => {
 };
 
 const onImageClick = (event) => {
+  if (mobile.value) {
+    if (!doubleTapped.value) {
+      doubleTapped.value = true;
+      setTimeout(function () {
+        doubleTapped.value = false;
+      }, 400);
+      return false;
+    }
+    event.preventDefault();
+  }
+
   const originalImageElement = document.getElementsByClassName("image")[0];
   const zoomedElement = document.getElementsByClassName("zoomed-image")[0];
-
-  const clientWidth = event.srcElement.clientWidth;
-  const clientHeight = event.srcElement.clientHeight;
-  const offsetX = event.offsetX;
-  const offsetY = event.offsetY;
-  const backgroundX = (offsetX / clientWidth) * 100;
-  const backgroundY = (offsetY / clientHeight) * 100;
+  const backgroundX = (event.offsetX / event.srcElement.clientWidth) * 100;
+  const backgroundY = (event.offsetY / event.srcElement.clientHeight) * 100;
 
   originalImageElement.style.display = "none";
   zoomedElement.style.display = "flex";
@@ -301,6 +308,7 @@ const getIsActive = (id) => {
               align-items: center;
               .thumbnail-images {
                 margin-right: 20px;
+                cursor: pointer;
               }
             }
           }

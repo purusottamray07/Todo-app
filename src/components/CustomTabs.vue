@@ -1,14 +1,10 @@
 <script setup>
-import { ref, onMounted, watch, computed } from "vue";
-import { useDisplay } from "vuetify";
+import { ref } from "vue";
 
 const props = defineProps({
   tabNames: Array,
 });
 const emit = defineEmits(["close"]);
-const { mobile } = useDisplay();
-
-onMounted(() => {});
 
 const selectedTab = ref(props.tabNames[0]?.id);
 

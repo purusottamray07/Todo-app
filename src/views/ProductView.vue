@@ -1,7 +1,6 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import { v4 as uuidv4 } from "uuid";
-import moment from "moment";
 import { useDisplay } from "vuetify";
 import PopupViewerModal from "../components/PopupViewerModal.vue";
 import productImageThumbnail from "../assets/product-image-thumbnail.jpeg";
@@ -74,8 +73,6 @@ const showZoomedInContent = ref(false);
 const { mobile } = useDisplay();
 const openModal = ref(false);
 
-onMounted(() => {});
-
 const onThumbnailClick = (data) => {
   visibleImage.value = data;
 };
@@ -92,30 +89,22 @@ const onArrowClick = (type) => {
 
   if (type === "left") {
     if (imagePosition === 0) {
-      // set to last
       visibleImage.value = imagesList.value[lastPosition].id;
     } else {
-      // set to prev number
       visibleImage.value = imagesList.value[imagePosition - 1].id;
     }
   } else {
     if (imagePosition === lastPosition) {
-      // set to first
       visibleImage.value = imagesList.value[0].id;
     } else {
-      // set to next number
       visibleImage.value = imagesList.value[imagePosition + 1].id;
     }
   }
 };
 
 const onImageMouseOver = (event) => {
-  const clientWidth = event.srcElement.clientWidth;
-  const clientHeight = event.srcElement.clientHeight;
-  const offsetX = event.offsetX;
-  const offsetY = event.offsetY;
-  const backgroundX = (offsetX / clientWidth) * 100;
-  const backgroundY = (offsetY / clientHeight) * 100;
+  const backgroundX = (event.offsetX / event.srcElement.clientWidth) * 100;
+  const backgroundY = (event.offsetY / event.srcElement.clientHeight) * 100;
   const largerImageContainer = document.getElementsByClassName(
     "image-zoomed-content"
   )[0];
