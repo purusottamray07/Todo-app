@@ -18,10 +18,10 @@ const isTabSelected = (id) => {
 </script>
 
 <template>
-  <div class="d-flex justify-center tabs-container">
-    <div class="tab-header-container">
+  <div class="d-flex justify-center tabs-container w-full flex-col">
+    <div class="tab-header-container w-full flex">
       <div
-        class="tab-header"
+        class="tab-header flex cursor-pointer"
         v-for="item of tabNames"
         :key="item.id"
         @click="onHeaderClick(item.id)"
@@ -32,10 +32,10 @@ const isTabSelected = (id) => {
         {{ item.name }}
       </div>
     </div>
-    <div class="tab-content-container">
+    <div class="tab-content-container h-full">
       <div v-for="item of tabNames" :key="item.id">
         <slot
-          class="tab-content"
+          class="tab-content w-full flex h-full"
           :name="item.name"
           v-if="isTabSelected(item.id)"
           >Nothing to display !!</slot
@@ -47,17 +47,12 @@ const isTabSelected = (id) => {
 
 <style scoped lang="scss">
 .tabs-container {
-  flex-direction: column;
-  width: 100%;
   .tab-header-container {
-    display: flex;
     border-bottom: 1px solid lightgrey;
-    width: 100%;
+
     .tab-header {
-      display: flex;
       min-width: 100px;
       padding: 10px;
-      cursor: pointer;
     }
 
     .tab-header:hover {
@@ -66,14 +61,8 @@ const isTabSelected = (id) => {
   }
 
   .tab-content-container {
-    height: 100%;
     div:has(div) {
       height: 100%;
-      .tab-content {
-        display: flex;
-        width: 100%;
-        height: 100%;
-      }
     }
   }
 }

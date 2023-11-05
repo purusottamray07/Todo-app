@@ -132,13 +132,16 @@ const onClose = () => {
     >
       <img src="../assets/tbps-logo.webp" class="app-logo" />
     </div>
-    <div class="body flex w-3/4p">
-      <div class="product-page-container">
+    <div class="body flex justify-center w-full">
+      <div class="product-page-container flex w-full">
         <div class="image-carousel-container">
-          <div class="carousel-section">
-            <div class="thumbnails-section" v-if="!mobile">
+          <div class="carousel-section flex align-center w-full h-full">
+            <div
+              class="thumbnails-section flex flex-col justify-start h-full"
+              v-if="!mobile"
+            >
               <div
-                class="thumbnail-images"
+                class="thumbnail-images cursor-pointer"
                 v-for="image in imagesList"
                 :key="image.id"
                 @click="onThumbnailClick(image.id)"
@@ -146,14 +149,16 @@ const onClose = () => {
                 <img :src="image.thumbnailImage" alt="" />
               </div>
             </div>
-            <div class="left-move" @click="onArrowClick('left')">&lt;</div>
+            <div class="left-move cursor-pointer" @click="onArrowClick('left')">
+              &lt;
+            </div>
             <div
-              class="image-container"
+              class="image-container flex justify-center w-full h-full"
               @mousemove="onImageMouseOver"
               @mouseout="showZoomedInContent = false"
             >
               <div
-                class="images"
+                class="images flex justify-center items-center"
                 v-for="image in imagesList"
                 :key="image.id"
                 @click="onImageClick(image.id)"
@@ -161,21 +166,26 @@ const onClose = () => {
                   display: visibleImage === image.id ? 'flex' : 'none',
                 }"
               >
-                <img :src="image.normalSizeImage" alt="" />
+                <img :src="image.normalSizeImage" alt="" class="h-full" />
               </div>
             </div>
             <div
-              class="image-zoomed-content"
+              class="image-zoomed-content absolute overflow-hidden"
               v-show="showZoomedInContent"
               :style="{
                 'background-image': `url(${getZoomedPic()})`,
               }"
             ></div>
-            <div class="right-move" @click="onArrowClick('right')">></div>
-          </div>
-          <div class="scroll-display">
             <div
-              class="images-dot"
+              class="right-move cursor-pointer"
+              @click="onArrowClick('right')"
+            >
+              >
+            </div>
+          </div>
+          <div class="scroll-display flex items-center justify-center">
+            <div
+              class="images-dot flex"
               v-for="image in imagesList"
               :key="image.id"
               @click="onThumbnailClick(image.id)"
@@ -186,9 +196,9 @@ const onClose = () => {
             ></div>
           </div>
         </div>
-        <div class="product-description">
+        <div class="product-description h-full">
           <div class="section-1">
-            <div class="product-manufacturer">
+            <div class="product-manufacturer flex justify-between">
               <span>SAMSUNG</span>
               <span class="offer">Hurry Limited Stock</span>
             </div>
@@ -206,13 +216,13 @@ const onClose = () => {
             </div>
           </div>
           <div class="section-3">
-            <div class="modify-quantity">
-              <span class="decrease">-</span>
-              <span class="quantity">1</span>
-              <span class="increase">+</span>
+            <div class="modify-quantity flex items-center">
+              <span class="decrease flex items-center">-</span>
+              <span class="quantity flex items-center justify-center">1</span>
+              <span class="increase flex items-center">+</span>
             </div>
-            <div class="add-to-basket">
-              <Button class="add-button">Add to Basket</Button>
+            <div class="add-to-basket flex justify-center">
+              <Button class="w-full">Add to Basket</Button>
             </div>
           </div>
         </div>
@@ -248,12 +258,8 @@ const onClose = () => {
     padding: 20px 200px;
     margin: 0 auto;
     height: calc(100% - 100px);
-    width: 100%;
-    justify-content: center;
     .product-page-container {
-      display: flex;
       height: 80%;
-      width: 100%;
       @media (max-width: 440px) {
         flex-direction: column;
         height: 100%;
@@ -269,10 +275,6 @@ const onClose = () => {
         }
 
         .carousel-section {
-          display: flex;
-          align-items: center;
-          width: 100%;
-          height: 100%;
           padding: 10px 0px;
           background-color: white;
 
@@ -281,11 +283,7 @@ const onClose = () => {
           }
 
           .thumbnails-section {
-            display: flex;
-            flex-direction: column;
             padding: 10px;
-            justify-content: flex-start;
-            height: 100%;
             .thumbnail-images {
               border: 2px solid transparent;
               border-radius: 4px;
@@ -295,7 +293,6 @@ const onClose = () => {
 
             .thumbnail-images:hover {
               border: 2px solid black;
-              cursor: pointer;
             }
           }
 
@@ -310,49 +307,30 @@ const onClose = () => {
             border: 2px solid transparent;
           }
 
-          .left-move:hover,
-          .right-move:hover {
-            cursor: pointer;
-          }
-
           .image-container {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
             .images {
-              display: flex;
-              align-items: center;
-              justify-content: center;
               padding: 20px;
               img {
-                height: 100%;
                 width: auto;
               }
             }
           }
 
           .image-zoomed-content {
-            position: absolute;
             width: 600px;
             height: 400px;
             background-position: 50% 50%;
             border: 2px solid red;
-            overflow: hidden;
             right: 380px;
             top: 120px;
             z-index: 1;
           }
         }
         .scroll-display {
-          display: flex;
-          justify-content: center;
-          align-items: center;
           height: 20px;
           margin-top: 10px;
 
           .images-dot {
-            display: flex;
             width: 12px;
             height: 12px;
             border-radius: 12px;
@@ -368,7 +346,6 @@ const onClose = () => {
 
       .product-description {
         width: 50%;
-        height: 100%;
         padding: 0px 30px;
         @media (max-width: 440px) {
           width: 100%;
@@ -378,9 +355,6 @@ const onClose = () => {
         .section-1 {
           padding-top: 0px;
           .product-manufacturer {
-            display: flex;
-            justify-content: space-between;
-
             .offer {
               color: #adcbbb;
               font-weight: 500;
@@ -406,8 +380,6 @@ const onClose = () => {
 
         .section-3 {
           .modify-quantity {
-            display: flex;
-            align-items: center;
             margin: 10px 0px;
             @media (max-width: 440px) {
               justify-content: center;
@@ -416,15 +388,10 @@ const onClose = () => {
             span.decrease,
             span.increase {
               font-size: 24px;
-              display: flex;
-              align-items: center;
               font-weight: bold;
             }
 
             .quantity {
-              display: flex;
-              justify-content: center;
-              align-items: center;
               width: 10%;
               background-color: #eeeeee;
               height: 40px;
@@ -432,12 +399,8 @@ const onClose = () => {
             }
           }
           .add-to-basket {
-            display: flex;
-            justify-content: center;
-
             .add-button {
               padding: 10px;
-              width: 100%;
               background-color: #ffd812;
               border-radius: 4px;
               font-weight: bold;

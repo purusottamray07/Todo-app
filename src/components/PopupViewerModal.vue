@@ -136,30 +136,37 @@ const getIsActive = (id) => {
 </script>
 
 <template>
-  <div class="d-flex justify-center popup-background" v-if="visible">
-    <div class="popup-container">
+  <div
+    class="d-flex justify-center popup-background absolute w-full h-full"
+    v-if="visible"
+  >
+    <div class="popup-container w-full h-full flex justify-center items-center">
       <div class="popup-body">
-        <div class="popup-header">
+        <div class="popup-header flex justify-between items-center relative">
           <div class="header-title" v-if="showHeader">Header</div>
-          <div class="close-popup" @click="onClose" v-if="!mobile">
+          <div
+            class="close-popup absolute right-0 top-0 cursor-pointer"
+            @click="onClose"
+            v-if="!mobile"
+          >
             <v-icon icon="mdi-close-circle"></v-icon>
           </div>
           <div class="back-btn" @click="onClose" v-else>Back</div>
         </div>
-        <div class="popup-content">
+        <div class="popup-content flex items-center justify-center h-full">
           <CustomTabs :tabNames="tabHeader">
             <template v-slot:Images>
-              <div class="images-container">
+              <div class="images-container flex h-full">
                 <div
-                  class="left-section swipe-container"
+                  class="left-section swipe-container flex justify-center h-full"
                   @touchstart="onTouchStart"
                   @touchend="onTouchEnd"
                 >
-                  <div class="product-description" v-if="mobile">
+                  <div class="product-description flex font-bold" v-if="mobile">
                     {{ getDescription() }}
                   </div>
                   <div
-                    class="zoomed-image"
+                    class="zoomed-image w-full"
                     :style="{ display: 'none' }"
                     @click="onZoomedImageClick"
                   ></div>
@@ -171,12 +178,15 @@ const getIsActive = (id) => {
                   />
                 </div>
                 <div class="right-section">
-                  <div class="product-description" v-if="!mobile">
+                  <div
+                    class="product-description flex font-bold"
+                    v-if="!mobile"
+                  >
                     {{ getDescription() }}
                   </div>
-                  <div class="thumbnails-container">
+                  <div class="thumbnails-container flex items-center">
                     <div
-                      class="thumbnail-images"
+                      class="thumbnail-images cursor-pointer"
                       v-for="image in imagesList"
                       :key="image.id"
                       @click="onThumbnailClick(image.id)"
@@ -205,17 +215,9 @@ const getIsActive = (id) => {
 
 <style scoped lang="scss">
 .popup-background {
-  position: absolute;
-  width: 100%;
-  height: 100%;
   background-color: rgba(228, 228, 228, 0.8);
   z-index: 10;
   .popup-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     .popup-body {
       width: 80%;
       height: 75vh;
@@ -229,10 +231,6 @@ const getIsActive = (id) => {
       }
 
       .popup-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: relative;
         padding: 5px 10px;
 
         .back-btn {
@@ -241,34 +239,16 @@ const getIsActive = (id) => {
           border-radius: 4px;
           box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
         }
-
-        .close-popup {
-          position: absolute;
-          right: 0;
-          top: 0px;
-          cursor: pointer;
-        }
       }
 
       .popup-content {
-        display: flex;
-        align-content: center;
-        justify-content: center;
-        height: 100%;
-
         .images-container {
-          display: flex;
-          height: 100%;
-
           @media (max-width: 440px) {
             flex-direction: column;
             padding: 10px;
           }
           .left-section {
-            display: flex;
-            justify-content: center;
             width: 70%;
-            height: 100%;
             padding: 20px 0px;
             @media (max-width: 440px) {
               flex-direction: column;
@@ -280,8 +260,6 @@ const getIsActive = (id) => {
 
             .product-description {
               margin-bottom: 10px;
-              display: flex;
-              font-weight: bold;
             }
 
             img {
@@ -300,15 +278,10 @@ const getIsActive = (id) => {
           .right-section {
             .product-description {
               margin-bottom: 10px;
-              display: flex;
-              font-weight: bold;
             }
             .thumbnails-container {
-              display: flex;
-              align-items: center;
               .thumbnail-images {
                 margin-right: 20px;
-                cursor: pointer;
               }
             }
           }

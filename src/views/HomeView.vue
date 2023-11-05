@@ -222,7 +222,7 @@ const duplicateTodo = (id) => {
   ></ConfirmModal>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .home-container {
   .header {
     background-color: #708090;
