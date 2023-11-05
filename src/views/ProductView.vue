@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 import { useDisplay } from "vuetify";
+import PopupViewerModal from "../components/PopupViewerModal.vue";
 import productImageThumbnail from "../assets/product-image-thumbnail.jpeg";
 import productImage from "../assets/product-image.jpeg";
 import productImageLarge from "../assets/product-image-large.jpeg";
@@ -19,29 +20,68 @@ const imagesList = ref([
     thumbnailImage: productImageThumbnail,
     normalSizeImage: productImage,
     largeSizeImage: productImageLarge,
+    description:
+      "Samsung Galaxy S23 Plus 5G (Phantom Black, 8GB, 256GB Storage)",
   },
   {
     id: uuidv4(),
     thumbnailImage: productImageFrontThumbnail,
     normalSizeImage: productImageFrontImage,
     largeSizeImage: productImageFrontLarge,
+    description:
+      "Samsung Galaxy S23 Plus 5G (Phantom Black, 8GB, 256GB Storage)",
   },
   {
     id: uuidv4(),
     thumbnailImage: productImageBackThumbnail,
     normalSizeImage: productImageBack,
     largeSizeImage: productImageBackLarge,
+    description:
+      "Samsung Galaxy S23 Plus 5G (Phantom Black, 8GB, 256GB Storage)",
+  },
+]);
+
+const productDetails = ref([
+  {
+    id: uuidv4(),
+    label: "SIM",
+    value: "Dual sim",
+  },
+  {
+    id: uuidv4(),
+    label: "Condition",
+    value: "Like new",
+  },
+  {
+    id: uuidv4(),
+    label: "colour",
+    value: "Lavendar",
+  },
+  {
+    id: uuidv4(),
+    label: "network",
+    value: "Unlocked",
+  },
+  {
+    id: uuidv4(),
+    label: "storage",
+    value: "512 GB",
   },
 ]);
 
 const visibleImage = ref(imagesList.value[0].id);
+const showZoomedInContent = ref(false);
 const { mobile } = useDisplay();
+const openModal = ref(false);
 
 onMounted(() => {});
 
 const onThumbnailClick = (data) => {
-  console.log(data);
   visibleImage.value = data;
+};
+
+const onImageClick = (data) => {
+  openModal.value = true;
 };
 
 const onArrowClick = (type) => {
@@ -68,6 +108,32 @@ const onArrowClick = (type) => {
     }
   }
 };
+
+const onImageMouseOver = (event) => {
+  const clientWidth = event.srcElement.clientWidth;
+  const clientHeight = event.srcElement.clientHeight;
+  const offsetX = event.offsetX;
+  const offsetY = event.offsetY;
+  const backgroundX = (offsetX / clientWidth) * 100;
+  const backgroundY = (offsetY / clientHeight) * 100;
+  const largerImageContainer = document.getElementsByClassName(
+    "image-zoomed-content"
+  )[0];
+
+  largerImageContainer.style.backgroundPosition = `${backgroundX}% ${backgroundY}%`;
+  showZoomedInContent.value = true;
+};
+
+const getZoomedPic = () => {
+  const imageURL = imagesList.value.find(
+    (image) => image.id === visibleImage.value
+  ).largeSizeImage;
+  return imageURL;
+};
+
+const onClose = () => {
+  openModal.value = false;
+};
 </script>
 
 <template>
@@ -81,7 +147,7 @@ const onArrowClick = (type) => {
       <div class="product-page-container">
         <div class="image-carousel-container">
           <div class="carousel-section">
-            <div class="thumbnails-section">
+            <div class="thumbnails-section" v-if="!mobile">
               <div
                 class="thumbnail-images"
                 v-for="image in imagesList"
@@ -92,12 +158,16 @@ const onArrowClick = (type) => {
               </div>
             </div>
             <div class="left-move" @click="onArrowClick('left')">&lt;</div>
-            <div class="image-container">
+            <div
+              class="image-container"
+              @mousemove="onImageMouseOver"
+              @mouseout="showZoomedInContent = false"
+            >
               <div
                 class="images"
                 v-for="image in imagesList"
                 :key="image.id"
-                @click="onThumbnailClick(image.id)"
+                @click="onImageClick(image.id)"
                 :style="{
                   display: visibleImage === image.id ? 'flex' : 'none',
                 }"
@@ -105,6 +175,13 @@ const onArrowClick = (type) => {
                 <img :src="image.normalSizeImage" alt="" />
               </div>
             </div>
+            <div
+              class="image-zoomed-content"
+              v-show="showZoomedInContent"
+              :style="{
+                'background-image': `url(${getZoomedPic()})`,
+              }"
+            ></div>
             <div class="right-move" @click="onArrowClick('right')">></div>
           </div>
           <div class="scroll-display">
@@ -130,25 +207,13 @@ const onArrowClick = (type) => {
             <div class="product-price">&#163;880.00</div>
           </div>
           <div class="section-2">
-            <div class="sim-info">
-              <label for="" class="name">Sim:</label>
-              <span>DUAL SIM</span>
-            </div>
-            <div class="condition-info">
-              <label for="" class="name">Condition:</label>
-              <span>LIKE NEW</span>
-            </div>
-            <div class="colour-info">
-              <label for="" class="name">Colour:</label>
-              <span>LAVENDAR</span>
-            </div>
-            <div class="network-info">
-              <label for="" class="name">Network:</label>
-              <span>UNLOCKED</span>
-            </div>
-            <div class="storage-info">
-              <label for="" class="name">Storage:</label>
-              <span>512 GB</span>
+            <div
+              class="product-details"
+              v-for="item of productDetails"
+              :key="item.id"
+            >
+              <label for="" class="name capitalize">{{ item.label }}:</label>
+              <span class="name uppercase mx-1">{{ item.value }}</span>
             </div>
           </div>
           <div class="section-3">
@@ -165,6 +230,14 @@ const onArrowClick = (type) => {
       </div>
     </div>
   </div>
+
+  <PopupViewerModal
+    :visible="openModal"
+    :imagesList="imagesList"
+    :selectedImage="visibleImage"
+    @close="onClose"
+    v-if="openModal"
+  ></PopupViewerModal>
 </template>
 
 <style lang="scss">
@@ -185,20 +258,20 @@ const onArrowClick = (type) => {
   .body {
     padding: 20px 200px;
     margin: 0 auto;
-    height: 100%;
+    height: calc(100% - 100px);
     width: 100%;
     justify-content: center;
     .product-page-container {
       display: flex;
-      height: 50vh;
+      height: 80%;
       width: 100%;
       @media (max-width: 440px) {
         flex-direction: column;
-        height: calc(100% - 100px);
+        height: 100%;
         overflow-y: auto;
       }
       .image-carousel-container {
-        width: 40%;
+        width: 50%;
         height: 100%;
         padding: 0px 30px;
         @media (max-width: 440px) {
@@ -213,6 +286,7 @@ const onArrowClick = (type) => {
           height: 100%;
           padding: 10px 0px;
           background-color: white;
+
           @media (max-width: 440px) {
             height: 400px;
           }
@@ -261,11 +335,24 @@ const onArrowClick = (type) => {
               display: flex;
               align-items: center;
               justify-content: center;
+              padding: 20px;
               img {
                 height: 100%;
                 width: auto;
               }
             }
+          }
+
+          .image-zoomed-content {
+            position: absolute;
+            width: 600px;
+            height: 400px;
+            background-position: 50% 50%;
+            border: 2px solid red;
+            overflow: hidden;
+            right: 380px;
+            top: 120px;
+            z-index: 1;
           }
         }
         .scroll-display {
@@ -291,7 +378,7 @@ const onArrowClick = (type) => {
       }
 
       .product-description {
-        width: 60%;
+        width: 50%;
         height: 100%;
         padding: 0px 30px;
         @media (max-width: 440px) {
