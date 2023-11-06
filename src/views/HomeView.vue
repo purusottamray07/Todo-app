@@ -9,6 +9,7 @@ import TodoDetails from "../components/TodoDetails.vue";
 import { storeToRefs } from "pinia";
 import TodoService from "../services/TodoServices";
 import { useDisplay } from "vuetify";
+import router from "@/router";
 
 const todoList = ref([]);
 const todoListDisplay = ref([]);
@@ -127,18 +128,25 @@ const duplicateTodo = (id) => {
   const itemToDuplicate = getTodo.value(id);
   todoStore.duplicateTodo(itemToDuplicate);
 };
+
+const onProductsPageClick = () => {
+  router.push({ name: "products" });
+};
 </script>
 
 <template>
   <div class="home-container flex flex-col w-full h-full">
     <div
-      class="header flex justify-center align-center h-full text-3xl font-bold text-white"
+      class="header flex justify-between align-center text-3xl font-bold text-white"
     >
       My Todo App
+      <div class="products-page cursor-pointer" @click="onProductsPageClick">
+        Products Page
+      </div>
     </div>
     <div class="body flex flex-col w-3/4p">
       <div
-        class="page-header flex justify-center align-center h-full text-base font-bold"
+        class="page-header flex justify-center align-center text-base font-bold"
       >
         {{ viewAllCompleted ? "All completed todo's" : "All todo's" }}
       </div>
@@ -227,6 +235,16 @@ const duplicateTodo = (id) => {
   .header {
     background-color: #708090;
     height: 100px;
+
+    .products-page {
+      background: white;
+      border-radius: 4px;
+      padding: 5px 10px;
+      color: rgba(32, 32, 39, 0.8);
+    }
+    .products-page:hover {
+      box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    }
   }
   .body {
     padding: 10px 0px;
