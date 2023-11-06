@@ -46,7 +46,11 @@ const isOverdue = (due) => {
         <v-btn class="action-btn" @click="updateTodo('duplicate', todo.id)">
           Duplicate
         </v-btn>
-        <v-btn class="action-btn" @click="updateTodo('done', todo.id)" v-if="todo.status !== 'Completed'">
+        <v-btn
+          class="action-btn"
+          @click="updateTodo('done', todo.id)"
+          v-if="todo.status !== 'Completed'"
+        >
           Done
         </v-btn>
         <v-btn class="action-btn" @click="updateTodo('delete', todo.id)">
@@ -56,7 +60,6 @@ const isOverdue = (due) => {
     </div>
 
     <div class="select-item" v-if="mobile">
-      <!-- <v-btn icon="mdi-plus"> -->
       <v-menu>
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" icon="mdi-dots-vertical" size="x-small"></v-btn>
@@ -69,7 +72,10 @@ const isOverdue = (due) => {
             <v-list-item-title @click="updateTodo('duplicate', todo.id)">
               Duplicate
             </v-list-item-title>
-            <v-list-item-title @click="updateTodo('done', todo.id)" v-if="todo.status !== 'Completed'">
+            <v-list-item-title
+              @click="updateTodo('done', todo.id)"
+              v-if="todo.status !== 'Completed'"
+            >
               Done
             </v-list-item-title>
             <v-list-item-title @click="updateTodo('delete', todo.id)">
@@ -78,10 +84,7 @@ const isOverdue = (due) => {
           </v-list-item>
         </v-list>
       </v-menu>
-      <!-- </v-btn> -->
     </div>
-
-    <!-- <v-btn icon="mdi-plus"> </v-btn> -->
   </div>
 </template>
 
