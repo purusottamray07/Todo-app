@@ -15,7 +15,6 @@ const { mobile } = useDisplay();
 
 const dialog = ref(props.visible);
 const currentImage = ref(props.selectedImage);
-const isZoomedInVisible = ref(false);
 const touchStartPosX = ref();
 const doubleTapped = ref(false);
 
@@ -23,36 +22,44 @@ const onTouchStart = (event) => {
   touchStartPosX.value = event.changedTouches[0].pageX;
 };
 
-const onTouchEnd = (event) => {
+const onTouchEnd = (event, tab) => {
   const currentEndPosX = event.changedTouches[0].pageX;
   const diff = currentEndPosX - touchStartPosX.value;
 
   if (diff > 0) {
-    handleSwipe("right");
+    handleSwipe("right", tab);
   } else if (diff < 0) {
-    handleSwipe("left");
+    handleSwipe("left", tab);
   }
 };
 
-const handleSwipe = (type) => {
-  const currentImagePosition = props.imagesList.findIndex(
+const handleSwipe = (type, tabInfo) => {
+  let filteredData;
+
+  if (tabInfo === "images") {
+    filteredData = props.imagesList.filter((item) => !item.isVideo);
+  } else {
+    filteredData = props.imagesList.filter((item) => item.isVideo);
+  }
+
+  const currentImagePosition = filteredData.findIndex(
     (image) => image.id === currentImage.value
   );
-  const lastPosition = props.imagesList.length - 1;
+  const lastPosition = filteredData.length - 1;
   switch (type) {
     case "left":
       if (currentImagePosition === 0) {
-        currentImage.value = props.imagesList[lastPosition].id;
+        currentImage.value = filteredData[lastPosition].id;
       } else {
-        currentImage.value = props.imagesList[currentImagePosition - 1].id;
+        currentImage.value = filteredData[currentImagePosition - 1].id;
       }
       break;
 
     case "right":
       if (currentImagePosition === lastPosition) {
-        currentImage.value = props.imagesList[0].id;
+        currentImage.value = filteredData[0].id;
       } else {
-        currentImage.value = props.imagesList[currentImagePosition + 1].id;
+        currentImage.value = filteredData[currentImagePosition + 1].id;
       }
       break;
     default:
@@ -92,8 +99,10 @@ const onZoomedImageClick = () => {
   const zoomedElement = document.getElementsByClassName("zoomed-image")[0];
 
   originalImageElement.style.display = "flex";
-  zoomedElement.style.display = "none";
-  isZoomedInVisible.value = false;
+  zoomedElement.style.width = "0px";
+  zoomedElement.style.height = "0px";
+  zoomedElement.style.opacity = "0";
+  zoomedElement.style.visibility = "hidden";
 };
 
 const onImageClick = (event) => {
@@ -114,24 +123,63 @@ const onImageClick = (event) => {
   const backgroundY = (event.offsetY / event.srcElement.clientHeight) * 100;
 
   originalImageElement.style.display = "none";
-  zoomedElement.style.display = "flex";
+
+  zoomedElement.style.visibility = "visible";
+  zoomedElement.style.width = "100%";
+  zoomedElement.style.height = "520px";
+  zoomedElement.style.opacity = "1";
   zoomedElement.style.backgroundImage = `url(${getZoomedPic()})`;
   zoomedElement.style.backgroundPosition = `${backgroundX}% ${backgroundY}%`;
-  isZoomedInVisible.value = true;
 };
 
-const getDescription = () => {
-  let x = props.imagesList.find((image) => image.id === currentImage.value);
-  return x.description;
+const getDescription = (isVideo = false) => {
+  if (isVideo) {
+    return props.imagesList
+      .filter((item) => item.isVideo)
+      .find((image) => image.id === currentImage.value).description;
+  } else {
+    return props.imagesList.find((image) => image.id === currentImage.value)
+      .description;
+  }
 };
 
-const getImage = () => {
-  return props.imagesList.find((image) => image.id === currentImage.value)
-    .normalSizeImage;
+const getImage = (isVideo) => {
+  const isCurrentItemVideo = props.imagesList.find(
+    (image) => image.id === currentImage.value
+  ).isVideo;
+
+  if (isVideo) {
+    if (isCurrentItemVideo) {
+      return props.imagesList
+        .filter((item) => item.isVideo)
+        .find((image) => image.id === currentImage.value).productVideo;
+    } else {
+      return props.imagesList.filter((item) => item.isVideo)[0].productVideo;
+    }
+  } else {
+    if (isCurrentItemVideo) {
+      return props.imagesList[0].normalSizeImage;
+    } else {
+      return props.imagesList.find((item) => item.id === currentImage.value)
+        .normalSizeImage;
+    }
+  }
 };
 
 const getIsActive = (id) => {
   return id === currentImage.value;
+};
+
+const getSelectedTab = () => {
+  const isVideoSelected = props.imagesList.find(
+    (item) => item.id === currentImage.value
+  ).isVideo;
+
+  if (isVideoSelected) {
+    return tabHeader.value.find((item) => item.name === "Videos").id;
+  } else {
+    return tabHeader.value[0].id;
+  }
 };
 </script>
 
@@ -154,25 +202,24 @@ const getIsActive = (id) => {
           <div class="back-btn" @click="onClose" v-else>Back</div>
         </div>
         <div class="popup-content flex justify-center h-full">
-          <CustomTabs :tabNames="tabHeader">
+          <CustomTabs :tabNames="tabHeader" :selectedTab="getSelectedTab()">
             <template v-slot:Images>
               <div class="images-container flex h-full">
                 <div
                   class="left-section swipe-container flex justify-center h-full"
                   @touchstart="onTouchStart"
-                  @touchend="onTouchEnd"
+                  @touchend="onTouchEnd($event, 'images')"
                 >
                   <div class="product-description flex font-bold" v-if="mobile">
                     {{ getDescription() }}
                   </div>
                   <div
                     class="zoomed-image w-full"
-                    :style="{ display: 'none' }"
                     @click="onZoomedImageClick"
                   ></div>
                   <img
                     class="image"
-                    :src="getImage()"
+                    :src="getImage(false)"
                     alt=""
                     @click="onImageClick"
                   />
@@ -187,7 +234,9 @@ const getIsActive = (id) => {
                   <div class="thumbnails-container flex items-center">
                     <div
                       class="thumbnail-images cursor-pointer"
-                      v-for="image in imagesList"
+                      v-for="image in imagesList.filter(
+                        (item) => !item.isVideo
+                      )"
                       :key="image.id"
                       @click="onThumbnailClick(image.id)"
                     >
@@ -205,7 +254,53 @@ const getIsActive = (id) => {
                 </div>
               </div>
             </template>
-            <template v-slot:Videos></template>
+            <template v-slot:Videos>
+              <div class="images-container flex h-full">
+                <div
+                  class="left-section swipe-container flex justify-center h-full"
+                  @touchstart="onTouchStart"
+                  @touchend="onTouchEnd($event, 'videos')"
+                >
+                  <div class="product-description flex font-bold" v-if="mobile">
+                    {{ getDescription() }}
+                  </div>
+                  <div
+                    class="zoomed-image w-full"
+                    @click="onZoomedImageClick"
+                  ></div>
+                  <video class="videos" controls>
+                    <source :src="getImage(true)" type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+                <div class="right-section">
+                  <div
+                    class="product-description flex font-bold"
+                    v-if="!mobile"
+                  >
+                    {{ getDescription() }}
+                  </div>
+                  <div class="thumbnails-container flex items-center">
+                    <div
+                      class="thumbnail-images cursor-pointer"
+                      v-for="image in imagesList.filter((item) => item.isVideo)"
+                      :key="image.id"
+                      @click="onThumbnailClick(image.id)"
+                    >
+                      <img
+                        :src="image.thumbnailImage"
+                        alt=""
+                        :style="{
+                          border: getIsActive(image.id)
+                            ? '3px solid lightcoral'
+                            : 'none',
+                        }"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
           </CustomTabs>
         </div>
       </div>
@@ -271,8 +366,12 @@ const getIsActive = (id) => {
             }
 
             .zoomed-image {
-              width: 100%;
-              height: 520px;
+              width: 0px;
+              height: 0px;
+              visibility: hidden;
+              opacity: 0;
+              -webkit-transition: opacity 2s;
+              transition: opacity 1s ease-in-out;
             }
           }
           .right-section {
@@ -281,6 +380,8 @@ const getIsActive = (id) => {
             }
             .thumbnails-container {
               .thumbnail-images {
+                width: 30px;
+                height: 40px;
                 margin-right: 20px;
               }
             }

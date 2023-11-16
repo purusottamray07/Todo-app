@@ -12,10 +12,16 @@ import productImageFrontLarge from "../assets/product-image-front-large.jpeg";
 import productImageBackThumbnail from "../assets/product-image-back-thumbnail.jpeg";
 import productImageBack from "../assets/product-image-back.jpeg";
 import productImageBackLarge from "../assets/product-image-back-large.jpeg";
+import videoIcon from "../assets/video-icon.svg";
+import playIcon from "../assets/play-svgrepo-com.svg";
+import circleIcon from "../assets/circle-svgrepo-com.svg";
+
+import productVideo from "../assets/S23Video.mp4";
 
 const imagesList = ref([
   {
     id: uuidv4(),
+    isVideo: false,
     thumbnailImage: productImageThumbnail,
     normalSizeImage: productImage,
     largeSizeImage: productImageLarge,
@@ -24,6 +30,7 @@ const imagesList = ref([
   },
   {
     id: uuidv4(),
+    isVideo: false,
     thumbnailImage: productImageFrontThumbnail,
     normalSizeImage: productImageFrontImage,
     largeSizeImage: productImageFrontLarge,
@@ -32,11 +39,20 @@ const imagesList = ref([
   },
   {
     id: uuidv4(),
+    isVideo: false,
     thumbnailImage: productImageBackThumbnail,
     normalSizeImage: productImageBack,
     largeSizeImage: productImageBackLarge,
     description:
       "Samsung Galaxy S23 Plus 5G (Phantom Black, 8GB, 256GB Storage)",
+  },
+  {
+    id: uuidv4(),
+    isVideo: true,
+    thumbnailImage: videoIcon,
+    productVideo,
+    description:
+      "Samsung Galaxy S23 Plus 5G (Phantom Black, 8GB, 256GB Storage) Video",
   },
 ]);
 
@@ -78,6 +94,7 @@ const onThumbnailClick = (data) => {
 };
 
 const onImageClick = (data) => {
+  visibleImage.value = data;
   openModal.value = true;
 };
 
@@ -102,9 +119,9 @@ const onArrowClick = (type) => {
   }
 };
 
-const onImageMouseOver = (event) => {
+const onImageMouseOver = (event, id) => {
   // show Zoom lens
-  const zoomLensElement = document.getElementsByClassName("zoom-lens")[0];
+  const zoomLensElement = document.getElementsByClassName(`zoom-lens-${id}`)[0];
   zoomLensElement.style.top = `${event.offsetY}px`;
   zoomLensElement.style.left = `${event.offsetX}px`;
   zoomLensElement.style.visibility = "visible";
@@ -119,8 +136,8 @@ const onImageMouseOver = (event) => {
   showZoomedInContent.value = true;
 };
 
-const onImageMouseOut = (event) => {
-  const zoomLensElement = document.getElementsByClassName("zoom-lens")[0];
+const onImageMouseOut = (event, id) => {
+  const zoomLensElement = document.getElementsByClassName(`zoom-lens-${id}`)[0];
   zoomLensElement.style.visibility = "hidden";
   showZoomedInContent.value = false;
 };
@@ -152,7 +169,7 @@ const onClose = () => {
               v-if="!mobile"
             >
               <div
-                class="thumbnail-images cursor-pointer"
+                class="thumbnail-images cursor-pointer flex justify-center"
                 v-for="image in imagesList"
                 :key="image.id"
                 @click="onThumbnailClick(image.id)"
@@ -172,15 +189,20 @@ const onClose = () => {
                 :style="{
                   display: visibleImage === image.id ? 'flex' : 'none',
                 }"
-                @mouseleave="onImageMouseOut"
+                @mouseleave="onImageMouseOut($event, image.id)"
               >
+                <video class="videos" controls v-if="image.productVideo">
+                  <source :src="image.productVideo" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
                 <img
                   :src="image.normalSizeImage"
                   alt=""
                   class="h-full"
-                  @mousemove="onImageMouseOver"
+                  @mousemove="onImageMouseOver($event, image.id)"
+                  v-else
                 />
-                <div class="zoom-lens"></div>
+                <div class="zoom-lens" :class="`zoom-lens-${image.id}`"></div>
               </div>
             </div>
             <div
@@ -203,11 +225,32 @@ const onClose = () => {
               v-for="image in imagesList"
               :key="image.id"
               @click="onThumbnailClick(image.id)"
-              :style="{
-                backgroundColor:
-                  visibleImage === image.id ? '#eb7d7c' : '#BDBDBD',
-              }"
-            ></div>
+            >
+              <div class="traingle" v-if="image.isVideo">
+                <img
+                  :src="playIcon"
+                  alt=""
+                  :style="{
+                    filter:
+                      visibleImage === image.id
+                        ? 'invert(10%) sepia(95%) saturate(3574%) hue-rotate(348deg) brightness(130%) contrast(101%)'
+                        : 'invert(0%) sepia(100%) saturate(7434%) hue-rotate(147deg) brightness(94%) contrast(100%)',
+                  }"
+                />
+              </div>
+              <div class="circle" v-else>
+                <img
+                  :src="circleIcon"
+                  alt=""
+                  :style="{
+                    filter:
+                      visibleImage === image.id
+                        ? 'invert(10%) sepia(95%) saturate(3574%) hue-rotate(348deg) brightness(130%) contrast(101%)'
+                        : 'invert(0%) sepia(100%) saturate(7434%) hue-rotate(147deg) brightness(94%) contrast(100%)',
+                  }"
+                />
+              </div>
+            </div>
           </div>
         </div>
         <div class="product-description h-full">
@@ -299,6 +342,8 @@ const onClose = () => {
           .thumbnails-section {
             padding: 10px;
             .thumbnail-images {
+              width: 30px;
+              height: 40px;
               border: 2px solid transparent;
               border-radius: 4px;
               padding: 4px;
@@ -325,6 +370,11 @@ const onClose = () => {
             .images {
               padding: 20px;
               position: relative;
+
+              video.videos {
+                width: 100%;
+                height: 100%;
+              }
               img {
                 width: auto;
               }
@@ -358,7 +408,6 @@ const onClose = () => {
             width: 12px;
             height: 12px;
             border-radius: 12px;
-            background-color: #bdbdbd;
             margin: 0px 6px;
           }
         }

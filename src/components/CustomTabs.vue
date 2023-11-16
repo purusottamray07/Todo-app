@@ -3,10 +3,11 @@ import { ref } from "vue";
 
 const props = defineProps({
   tabNames: Array,
+  selectedTab: String,
 });
 const emit = defineEmits(["close"]);
 
-const selectedTab = ref(props.tabNames[0]?.id);
+const selectedTab = ref(props.selectedTab);
 
 const onHeaderClick = (id) => {
   selectedTab.value = id;
@@ -14,6 +15,10 @@ const onHeaderClick = (id) => {
 
 const isTabSelected = (id) => {
   return id === selectedTab.value;
+};
+
+const getTabContent = () => {
+  return props.tabNames.find((item) => item.id === selectedTab.value).name;
 };
 </script>
 
@@ -36,10 +41,11 @@ const isTabSelected = (id) => {
       <div v-for="item of tabNames" :key="item.id">
         <slot
           class="tab-content w-full flex h-full"
-          :name="item.name"
+          :name="getTabContent()"
           v-if="isTabSelected(item.id)"
-          >Nothing to display !!</slot
         >
+          Nothing to display !!
+        </slot>
       </div>
     </div>
   </div>
