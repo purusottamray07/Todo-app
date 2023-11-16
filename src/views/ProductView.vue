@@ -103,6 +103,12 @@ const onArrowClick = (type) => {
 };
 
 const onImageMouseOver = (event) => {
+  // show Zoom lens
+  const zoomLensElement = document.getElementsByClassName("zoom-lens")[0];
+  zoomLensElement.style.top = `${event.offsetY}px`;
+  zoomLensElement.style.left = `${event.offsetX}px`;
+  zoomLensElement.style.visibility = "visible";
+
   const backgroundX = (event.offsetX / event.srcElement.clientWidth) * 100;
   const backgroundY = (event.offsetY / event.srcElement.clientHeight) * 100;
   const largerImageContainer = document.getElementsByClassName(
@@ -113,6 +119,11 @@ const onImageMouseOver = (event) => {
   showZoomedInContent.value = true;
 };
 
+const onImageMouseOut = (event) => {
+  const zoomLensElement = document.getElementsByClassName("zoom-lens")[0];
+  zoomLensElement.style.visibility = "hidden";
+  showZoomedInContent.value = false;
+};
 const getZoomedPic = () => {
   const imageURL = imagesList.value.find(
     (image) => image.id === visibleImage.value
@@ -152,11 +163,7 @@ const onClose = () => {
             <div class="left-move cursor-pointer" @click="onArrowClick('left')">
               &lt;
             </div>
-            <div
-              class="image-container flex justify-center w-full h-full"
-              @mousemove="onImageMouseOver"
-              @mouseout="showZoomedInContent = false"
-            >
+            <div class="image-container flex justify-center w-full h-full">
               <div
                 class="images flex justify-center items-center"
                 v-for="image in imagesList"
@@ -165,8 +172,15 @@ const onClose = () => {
                 :style="{
                   display: visibleImage === image.id ? 'flex' : 'none',
                 }"
+                @mouseleave="onImageMouseOut"
               >
-                <img :src="image.normalSizeImage" alt="" class="h-full" />
+                <img
+                  :src="image.normalSizeImage"
+                  alt=""
+                  class="h-full"
+                  @mousemove="onImageMouseOver"
+                />
+                <div class="zoom-lens"></div>
               </div>
             </div>
             <div
@@ -310,8 +324,18 @@ const onClose = () => {
           .image-container {
             .images {
               padding: 20px;
+              position: relative;
               img {
                 width: auto;
+              }
+              .zoom-lens {
+                cursor: pointer;
+                position: absolute;
+                visibility: hidden;
+                width: 60px;
+                height: 40px;
+                border: 2px solid red;
+                background-color: rgba(0, 0, 0, 0.17);
               }
             }
           }
