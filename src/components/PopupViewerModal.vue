@@ -95,41 +95,17 @@ const getZoomedPic = () => {
 };
 
 const onZoomedImageClick = () => {
+  let zoomedElement;
   const originalImageElement = document.getElementsByClassName("image")[0];
-  const zoomedElement = document.getElementsByClassName("zoomed-image")[0];
 
-  originalImageElement.style.display = "flex";
-  zoomedElement.style.width = "0px";
-  zoomedElement.style.height = "0px";
-  zoomedElement.style.opacity = "0";
-  zoomedElement.style.visibility = "hidden";
-};
-
-const onImageClick = (event) => {
   if (mobile.value) {
-    if (!doubleTapped.value) {
-      doubleTapped.value = true;
-      setTimeout(function () {
-        doubleTapped.value = false;
-      }, 400);
-      return false;
-    }
-    event.preventDefault();
+    zoomedElement = document.getElementsByClassName("zoomed-image-mobile")[0];
+  } else {
+    zoomedElement = document.getElementsByClassName("zoomed-image")[0];
   }
 
-  const originalImageElement = document.getElementsByClassName("image")[0];
-  const zoomedElement = document.getElementsByClassName("zoomed-image")[0];
-  const backgroundX = (event.offsetX / event.srcElement.clientWidth) * 100;
-  const backgroundY = (event.offsetY / event.srcElement.clientHeight) * 100;
-
-  originalImageElement.style.display = "none";
-
-  zoomedElement.style.visibility = "visible";
-  zoomedElement.style.width = "100%";
-  zoomedElement.style.height = "520px";
-  zoomedElement.style.opacity = "1";
-  zoomedElement.style.backgroundImage = `url(${getZoomedPic()})`;
-  zoomedElement.style.backgroundPosition = `${backgroundX}% ${backgroundY}%`;
+  originalImageElement.style.display = "flex";
+  zoomedElement.style.display = "none";
 };
 
 const getDescription = (isVideo = false) => {
@@ -181,6 +157,72 @@ const getSelectedTab = () => {
     return tabHeader.value[0].id;
   }
 };
+
+const getDisplayImage = (isVideo) => {
+  const isCurrentItemVideo = props.imagesList.find(
+    (image) => image.id === currentImage.value
+  ).isVideo;
+
+  if (isVideo) {
+    if (isCurrentItemVideo) {
+      return props.imagesList
+        .filter((item) => item.isVideo)
+        .find((image) => image.id === currentImage.value).productVideo;
+    } else {
+      return props.imagesList.filter((item) => item.isVideo)[0].productVideo;
+    }
+  } else {
+    if (isCurrentItemVideo) {
+      return props.imagesList[0].normalSizeImage;
+    } else {
+      return props.imagesList.find((item) => item.id === currentImage.value)
+        .normalSizeImage;
+    }
+  }
+};
+
+const onMouseOver = (event) => {
+  const zoomElement = event.currentTarget;
+  const backgroundX = (event.offsetX / event.srcElement.clientWidth) * 100;
+  const backgroundY = (event.offsetY / event.srcElement.clientHeight) * 100;
+
+  zoomElement.style.backgroundPosition = `${backgroundX}% ${backgroundY}%`;
+};
+
+const onImageClick = (event) => {
+  if (mobile.value) {
+    if (!doubleTapped.value) {
+      doubleTapped.value = true;
+      setTimeout(function () {
+        doubleTapped.value = false;
+      }, 400);
+      return false;
+    }
+
+    const originalImageElement = document.getElementsByClassName("image")[0];
+    const zoomedElement = document.getElementsByClassName(
+      "zoomed-image-mobile"
+    )[0];
+    const backgroundX = (event.offsetX / event.srcElement.clientWidth) * 100;
+    const backgroundY = (event.offsetY / event.srcElement.clientHeight) * 100;
+
+    originalImageElement.style.display = "none";
+
+    zoomedElement.style.display = "flex";
+    zoomedElement.style.width = "100%";
+    zoomedElement.style.height = "520px";
+    zoomedElement.style.opacity = "1";
+    zoomedElement.style.backgroundImage = `url(${getZoomedPic()})`;
+    zoomedElement.style.backgroundPosition = `${backgroundX}% ${backgroundY}%`;
+    event.preventDefault();
+  } else {
+    const element = document.getElementsByClassName("image")[0];
+    element.style.display = "none";
+
+    const zoomedElement = document.getElementsByClassName("zoomed-image")[0];
+    zoomedElement.style.display = "flex";
+  }
+};
 </script>
 
 <template>
@@ -216,10 +258,24 @@ const getSelectedTab = () => {
                   <div
                     class="zoomed-image w-full"
                     @click="onZoomedImageClick"
+                    @mousemove="onMouseOver"
+                    :style="{
+                      'background-image': `url(${getZoomedPic()})`,
+                    }"
+                    v-if="!mobile"
                   ></div>
+                  <div
+                    class="zoomed-image-mobile w-full"
+                    @click="onZoomedImageClick"
+                    :style="{
+                      'background-image': `url(${getZoomedPic()})`,
+                    }"
+                    v-else
+                  ></div>
+
                   <img
-                    class="image"
-                    :src="getImage(false)"
+                    class="image cursor-pointer"
+                    :src="getDisplayImage(false)"
                     alt=""
                     @click="onImageClick"
                   />
@@ -264,10 +320,6 @@ const getSelectedTab = () => {
                   <div class="product-description flex font-bold" v-if="mobile">
                     {{ getDescription() }}
                   </div>
-                  <div
-                    class="zoomed-image w-full"
-                    @click="onZoomedImageClick"
-                  ></div>
                   <video class="videos" controls>
                     <source :src="getImage(true)" type="video/mp4" />
                     Your browser does not support the video tag.
@@ -366,12 +418,23 @@ const getSelectedTab = () => {
             }
 
             .zoomed-image {
-              width: 0px;
-              height: 0px;
-              visibility: hidden;
+              display: none;
+              width: 80%;
+              height: 100%;
+              margin: 0 auto;
+              overflow: hidden;
+              cursor: zoom-in;
+              background-position: 50% 50%;
+            }
+
+            .zoomed-image img:hover {
               opacity: 0;
-              -webkit-transition: opacity 2s;
-              transition: opacity 1s ease-in-out;
+            }
+
+            .zoomed-image img {
+              transition: opacity 0.5s;
+              display: block;
+              width: 100%;
             }
           }
           .right-section {
